@@ -1,6 +1,12 @@
 import time
 import numpy as np
 import nlopt_wrapper
+from datetime import datetime
+from datetime import timedelta
+from decimal import Decimal
+
+
+
 
 
 def Optimierungsfunktion(Faktoren,a,b):
@@ -31,6 +37,8 @@ def Optimierungsfunktion(Faktoren,a,b):
 def Opt():
     global bnds;
     global mittl_Abweichung
+    global Startzeit
+    Startzeit = datetime.today()
     #Obere und untere Grenzen für den Optimierer beim Verändern der Variablen
     ubnds = ((50), (50), (50))
     lbnds = ((-50), (-50), (-50))
@@ -44,7 +52,7 @@ def Opt():
 
     #NLopt derivative-free optimizers are:
     #______________________________________________________
-    Optergebnis = nlopt_wrapper.BOBYQA(Optimierungsfunktion, x0=Startwerte, args=(0, 0), ubnds=ubnds, lbnds=lbnds,tol=0.00001, xtol=0.001)
+    #Optergebnis = nlopt_wrapper.BOBYQA(Optimierungsfunktion, x0=Startwerte, args=(0, 0), ubnds=ubnds, lbnds=lbnds,tol=0.00001, xtol=0.001)
     #Optergebnis = nlopt_wrapper.subplex(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
     #Optergebnis = nlopt_wrapper.AUGLAG(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
     #Optergebnis = nlopt_wrapper.AUGLAG_EQ(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
@@ -52,7 +60,7 @@ def Opt():
     #Optergebnis = nlopt_wrapper.NEWUOA(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
     #Optergebnis = nlopt_wrapper.NEWUOA_BOUND(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
     #Optergebnis = nlopt_wrapper.PRAXIS(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
-    #Optergebnis = nlopt_wrapper.NELDERMEAD(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
+    Optergebnis = nlopt_wrapper.NELDERMEAD(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
 
     #NLopt gradient-based optimizers are:
     # zur Zeit nicht richtig implementiert, da kein Gradient vorgegeben...
@@ -68,7 +76,7 @@ def Opt():
 
     # NLopt optimizers w/o constraint equations:
     # ______________________________________________________
-    # Optergebnis = nlopt_wrapper.GN_DIRECT(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, maxtime=100000, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
+    #Optergebnis = nlopt_wrapper.GN_DIRECT(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, maxtime=100000, lbnds=lbnds, args=(0, 0), tol=0.000001, xtol=0.00001)
     #Optergebnis = nlopt_wrapper.GN_CRS2_LM(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, maxtime=100000, lbnds=lbnds, args=(0, 0), tol=0.0000001, xtol=0.000001)
     #Optergebnis = nlopt_wrapper.GD_STOGO_RAND(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, maxtime=100000, lbnds=lbnds, args=(0, 0), tol=0.0000001, xtol=0.000001)
     #Optergebnis = nlopt_wrapper.GN_MLSL(Optimierungsfunktion, x0=Startwerte, ubnds=ubnds, maxtime=100000, lbnds=lbnds, args=(0, 0), tol=0.0000001, xtol=0.000001)
@@ -88,6 +96,12 @@ Schalter = 1
 
 if Schalter == 1:
     Opt()
+    Laufzeit = timedelta(seconds=(datetime.today().second) - (Startzeit.second))
+    print(Laufzeit)
+    Laufzeit_ms = timedelta(microseconds=datetime.today().microsecond - Startzeit.microsecond)
+    # print(Zeit_seit_Start_1)
+    print("Laufzeit der Optimierung: " + str(Decimal(Laufzeit.seconds) )+"."+str(Decimal(Laufzeit_ms.microseconds)) + " Sekunden")
 else:
     Startwerte =[0.5,-0.8,1.2]
     Optimierungsfunktion(Startwerte,1,1)
+
